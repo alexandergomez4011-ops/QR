@@ -1,1 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Escáner QR</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body style="font-family: Arial; text-align:center; margin-top:40px;">
+    <h2>Escáner QR</h2>
+    <div id="reader" style="width:300px; margin:auto;"></div>
+    <div id="resultado" style="margin-top:20px; font-size:18px;"></div>
 
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById("resultado").innerHTML = "Código detectado: " + decodedText;
+
+            // Redirigir automáticamente al link del QR
+            window.location.href = decodedText;
+        }
+
+        const html5QrCode = new Html5Qrcode("reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                html5QrCode.start(
+                    devices[0].id,
+                    {
+                        fps: 10,
+                        qrbox: 250
+                    },
+                    onScanSuccess
+                );
+            }
+        }).catch(err => {
+            document.getElementById("resultado").innerHTML = "Error al acceder a la cámara.";
+        });
+    </script>
+</body>
+</html>
