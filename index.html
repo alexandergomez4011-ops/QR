@@ -11,19 +11,27 @@
     <div id="resultado" style="margin-top:20px; font-size:18px;"></div>
 
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
+        function onScanSuccess(decodedText) {
             document.getElementById("resultado").innerHTML = "Código detectado: " + decodedText;
-
-            // Redirigir automáticamente al link del QR
-            window.location.href = decodedText;
+            window.location.href = decodedText; 
         }
 
         const html5QrCode = new Html5Qrcode("reader");
 
-        Html5Qrcode.getCameras().then(devices => {
-            if (devices && devices.length) {
+        Html5Qrcode.getCameras()
+        .then(devices => {
+            if (devices.length > 0) {
+                // Buscar la cámara trasera por su etiqueta o facingMode
+                const backCamera = devices.find(d => 
+                    d.label.toLowerCase().includes("back") || 
+                    d.label.toLowerCase().includes("trasera") || 
+                    d.label.toLowerCase().includes("environment")
+                );
+
+                const cameraToUse = backCamera ? backCamera.id : devices[0].id;
+
                 html5QrCode.start(
-                    devices[0].id,
+                    cameraToUse,
                     {
                         fps: 10,
                         qrbox: 250
@@ -31,7 +39,8 @@
                     onScanSuccess
                 );
             }
-        }).catch(err => {
+        })
+        .catch(err => {
             document.getElementById("resultado").innerHTML = "Error al acceder a la cámara.";
         });
     </script>
